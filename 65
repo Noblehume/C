@@ -1,0 +1,92 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
+
+// Funzione per verificare la vittoria in una riga, colonna o diagonale
+bool verificaVittoria(const char griglia[3][3], char giocatore) {
+    // Verifica righe e colonne
+    for (int i = 0; i < 3; ++i) {
+        if ((griglia[i][0] == giocatore && griglia[i][1] == giocatore && griglia[i][2] == giocatore) ||
+            (griglia[0][i] == giocatore && griglia[1][i] == giocatore && griglia[2][i] == giocatore)) {
+            return true;
+        }
+    }
+
+    // Verifica diagonali
+    if ((griglia[0][0] == giocatore && griglia[1][1] == giocatore && griglia[2][2] == giocatore) ||
+        (griglia[0][2] == giocatore && griglia[1][1] == giocatore && griglia[2][0] == giocatore)) {
+        return true;
+    }
+
+    return false;
+}
+
+int main() {
+    // Creazione di una finestra SFML
+    sf::RenderWindow finestra(sf::VideoMode(300, 300), "Tris in C++ con SFML");
+
+    // Griglia di gioco
+    char griglia[3][3] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
+
+    // Giocatore corrente (X o O)
+    char giocatoreCorrente = 'X';
+
+    // Ciclo principale del gioco
+    while (finestra.isOpen()) {
+        // Gestione degli eventi
+        sf::Event evento;
+        while (finestra.pollEvent(evento)) {
+            if (evento.type == sf::Event::Closed) {
+                finestra.close();
+            }
+
+            // Gestione dei clic del mouse per effettuare una mossa
+            if (evento.type == sf::Event::MouseButtonPressed) {
+                sf::Vector2i posizioneMouse = sf::Mouse::getPosition(finestra);
+                int riga = posizioneMouse.y / 100;
+                int colonna = posizioneMouse.x / 100;
+
+                // Verifica se la cella è vuota prima di effettuare la mossa
+                if (griglia[riga][colonna] == ' ') {
+                    griglia[riga][colonna] = giocatoreCorrente;
+
+                    // Verifica se il giocatore corrente ha vinto
+                    if (verificaVittoria(griglia, giocatoreCorrente)) {
+                        std::cout << "Il giocatore " << giocatoreCorrente << " ha vinto!" << std::endl;
+                        finestra.close();
+                    }
+
+                    // Cambia il giocatore corrente
+                    giocatoreCorrente = (giocatoreCorrente == 'X') ? 'O' : 'X';
+                }
+            }
+        }
+
+        // Pulizia della finestra
+        finestra.clear();
+
+        // Disegno della griglia di gioco
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                sf::RectangleShape cella(sf::Vector2f(100, 100));
+                cella.setPosition(j * 100, i * 100);
+                cella.setOutlineThickness(2);
+                cella.setOutlineColor(sf::Color::Black);
+                finestra.draw(cella);
+
+                if (griglia[i][j] != ' ') {
+                    sf::Text simbolo;
+                    simbolo.setString(griglia[i][j]);
+                    simbolo.setFont(sf::Font::getDefaultFont());
+                    simbolo.setCharacterSize(50);
+                    simbolo.setPosition(j * 100 + 30, i * 100 + 15);
+                    finestra.draw(simbolo);
+                }
+            }
+        }
+
+        // Visualizzazione della finestra
+        finestra.display();
+    }
+
+    return 0;
+}
