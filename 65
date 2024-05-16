@@ -11,9 +11,7 @@ bool verificaVittoria(const char griglia[3][3], char giocatore) {
         }
     }
 
-    // Verifica diagonali
-    if ((griglia[0][0] == giocatore && griglia[1][1] == giocatore && griglia[2][2] == giocatore) ||
-        (griglia[0][2] == giocatore && griglia[1][1] == giocatore && griglia[2][0] == giocatore)) {
+    // Verifica diagonaliocatore)) {
         return true;
     }
 
